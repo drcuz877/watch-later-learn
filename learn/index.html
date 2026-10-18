@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Learn · Video digests</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:SOFT,WONK,opsz,wght@0..100,0..1,9..144,500..800&family=Outfit:wght@400..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+  <main class="wrap">
+    <div class="eyebrow">✦ Learn</div>
+    <h1>Video digests, <span class="hl">ready</span> when you are.</h1>
+    <p class="sub">A five-bullet summary, timestamped moments, one thing to do, and a flip-card quiz for every video, updated nightly from your All Things AI playlist.</p>
+    <div class="controls">
+      <label class="search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="search" type="search" placeholder="Search title, channel, or verdict" autocomplete="off" enterkeyhint="search" aria-label="Search title, channel, or verdict">
+      </label>
+      <button type="button" class="toggle" id="worth" aria-pressed="false" aria-controls="grid">
+        <span class="sw" aria-hidden="true"></span>
+        Only worth watching
+      </button>
+      <div class="count" id="count" aria-live="polite"><span id="count-label">🎬 …</span><span class="long"> · updated nightly</span></div>
+    </div>
+    <div class="grid" id="grid"></div>
+    <p class="empty" id="empty" hidden>Loading digests…</p>
+    <footer>Updated nightly from your All Things AI playlist</footer>
+  </main>
+  <noscript><p class="empty" style="max-width:1060px;margin:0 auto 40px">JavaScript is required to load the digests.</p></noscript>
+  <script src="js/csv.js"></script>
+  <script src="js/digest.js"></script>
+  <script src="js/home.js"></script>
+</body>
+</html>
