@@ -596,10 +596,15 @@ a.tc:hover { filter: brightness(0.95); }
   .layout .wrap { padding-left: 18px; }
   .filters-btn { display: inline-flex; }
   .side {
-    position: fixed; z-index: 30; top: 0; left: 0; bottom: 0; width: min(320px, 86vw); max-height: none;
-    background: var(--bg); padding: 22px 16px 32px; box-shadow: 8px 0 40px rgba(80,50,20,0.2);
+    position: fixed; z-index: 30; top: 0; left: 0; bottom: 0; width: min(320px, 86vw);
+    /* Bounded height so the drawer scrolls (WebKit sizes it to content when align-self is start). */
+    align-self: stretch; height: 100vh; height: 100dvh; max-height: none;
+    overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; touch-action: pan-y;
+    background: var(--bg); box-shadow: 8px 0 40px rgba(80,50,20,0.2);
+    padding: calc(22px + env(safe-area-inset-top, 0px)) 16px calc(32px + env(safe-area-inset-bottom, 0px));
     transform: translateX(-105%); transition: transform 0.28s cubic-bezier(0.3, 1.2, 0.6, 1);
   }
+  .side > * { flex-shrink: 0; }
   .side.open { transform: none; }
   .side-close { display: grid; place-items: center; }
   .scrim { position: fixed; inset: 0; z-index: 20; background: rgba(42, 36, 32, 0.35); }
