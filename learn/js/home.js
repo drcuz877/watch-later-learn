@@ -50,7 +50,7 @@
       filters[kind] = on ? null : name;
       writeHash();
       update();
-      if (window.matchMedia("(max-width: 900px)").matches) closeSide();
+      if (mobileQuery.matches) closeSide();
     });
     return b;
   }
@@ -140,8 +140,43 @@
 
   function update() { buildMenu(); renderActive(); render(); }
 
-  function openSide() { side.classList.add("open"); scrim.hidden = false; filtersBtn.setAttribute("aria-expanded", "true"); }
-  function closeSide() { side.classList.remove("open"); scrim.hidden = true; filtersBtn.setAttribute("aria-expanded", "false"); }
+  // Mobile drawer. While it is open the page behind is locked with the iOS-safe
+  // position:fixed body technique (scroll position saved and restored on close).
+  const mobileQuery = window.matchMedia("(max-width: 900px)");
+  let savedY = 0;
+  let locked = false;
+  function lockPage() {
+    if (locked) return;
+    savedY = window.scrollY || window.pageYOffset || 0;
+    document.body.style.top = -savedY + "px";
+    document.documentElement.classList.add("menu-lock");
+    locked = true;
+  }
+  function unlockPage() {
+    if (!locked) return;
+    document.documentElement.classList.remove("menu-lock");
+    document.body.style.top = "";
+    window.scrollTo(0, savedY);
+    locked = false;
+  }
+  function openSide() {
+    side.classList.add("open");
+    scrim.hidden = false;
+    filtersBtn.setAttribute("aria-expanded", "true");
+    if (mobileQuery.matches) lockPage();
+  }
+  function closeSide() {
+    side.classList.remove("open");
+    scrim.hidden = true;
+    filtersBtn.setAttribute("aria-expanded", "false");
+    unlockPage();
+  }
+  // Swipes on the dimmed overlay must not scroll the page behind it.
+  // (Only the overlay gets this handler; the drawer itself is never blocked.)
+  scrim.addEventListener("touchmove", (event) => event.preventDefault(), { passive: false });
+  const onQueryChange = () => { if (!mobileQuery.matches) closeSide(); };
+  if (mobileQuery.addEventListener) mobileQuery.addEventListener("change", onQueryChange);
+  else if (mobileQuery.addListener) mobileQuery.addListener(onQueryChange);
   filtersBtn.addEventListener("click", openSide);
   $("side-close").addEventListener("click", closeSide);
   scrim.addEventListener("click", closeSide);
