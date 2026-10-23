@@ -593,6 +593,39 @@ a.tc:hover { filter: brightness(0.95); }
 .vtags .tc { font-size: 13px; padding: 6px 12px; }
 .hero .src { margin-top: 14px; font-size: 12.5px; }
 
+/* ---------- Desktop collapsible menu (above 900px only) ---------- */
+.menu-toggle { display: none; }
+@media (min-width: 901px) {
+  .layout { transition: grid-template-columns 0.26s cubic-bezier(0.3, 1, 0.5, 1), gap 0.26s; }
+  .side { transition: opacity 0.2s ease, visibility 0s linear 0s; }
+  .menu-toggle {
+    display: inline-flex; align-items: center; gap: 8px; flex: none;
+    font: inherit; font-size: 13.5px; font-weight: 650; color: var(--text); cursor: pointer;
+    background: #fff; border: 2px solid var(--line); border-radius: 999px;
+    padding: 7px 14px 7px 8px; box-shadow: var(--shadow);
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  }
+  .menu-toggle:hover { transform: translateY(-2px); box-shadow: var(--shadowHi); border-color: var(--coralSoft); }
+  .menu-toggle .mt-icon {
+    display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%;
+    background: var(--coral); color: #fff; font-size: 15px; line-height: 1;
+  }
+  .top-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  /* Fixed inner width so the menu does not re-wrap while the column animates. */
+  .side { min-width: 0; overflow: hidden; }
+  .side-scroll { width: 268px; flex: none; }
+  html.menu-collapsed .layout { grid-template-columns: 0px minmax(0, 1fr); gap: 0; }
+  html.menu-collapsed .side {
+    opacity: 0; visibility: hidden; overflow: hidden; pointer-events: none;
+    transition: opacity 0.15s ease, visibility 0s linear 0.26s;
+  }
+  html.menu-collapsed .layout .wrap { padding-left: 32px; }
+  html.menu-collapsed .menu-toggle .mt-icon { background: var(--teal); }
+}
+@media (min-width: 901px) and (prefers-reduced-motion: reduce) {
+  .layout, .side, .menu-toggle, html.menu-collapsed .side { transition: none; }
+}
+
 @media (max-width: 900px) {
   .layout { display: block; }
   .layout .wrap { padding-left: 18px; }

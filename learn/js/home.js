@@ -177,6 +177,31 @@
   const onQueryChange = () => { if (!mobileQuery.matches) closeSide(); };
   if (mobileQuery.addEventListener) mobileQuery.addEventListener("change", onQueryChange);
   else if (mobileQuery.addListener) mobileQuery.addListener(onQueryChange);
+  // Desktop only (above 900px): the ☰ menu-toggle collapses the sidebar column so the
+  // cards use the full width. The choice is remembered per browser in localStorage.
+  // The inline script in <head> applies html.menu-collapsed before first paint.
+  const menuToggle = $("menu-toggle");
+  const COLLAPSE_KEY = "wl-menu-collapsed";
+  function setCollapsed(collapsed, save) {
+    document.documentElement.classList.toggle("menu-collapsed", collapsed);
+    const label = collapsed ? "Show filter menu" : "Hide filter menu";
+    menuToggle.setAttribute("aria-expanded", collapsed ? "false" : "true");
+    menuToggle.setAttribute("aria-label", label);
+    menuToggle.title = label;
+    menuToggle.querySelector(".mt-text").textContent = collapsed ? "Show menu" : "Hide menu";
+    if (save) {
+      try {
+        if (collapsed) localStorage.setItem(COLLAPSE_KEY, "1");
+        else localStorage.removeItem(COLLAPSE_KEY);
+      } catch (e) { /* storage unavailable: still toggles for this visit */ }
+    }
+  }
+  if (menuToggle) {
+    setCollapsed(document.documentElement.classList.contains("menu-collapsed"), false);
+    menuToggle.addEventListener("click", () => {
+      setCollapsed(!document.documentElement.classList.contains("menu-collapsed"), true);
+    });
+  }
   filtersBtn.addEventListener("click", openSide);
   $("side-close").addEventListener("click", closeSide);
   scrim.addEventListener("click", closeSide);

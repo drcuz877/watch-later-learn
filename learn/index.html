@@ -7,7 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:SOFT,WONK,opsz,wght@0..100,0..1,9..144,500..800&family=Outfit:wght@400..700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/site.css?v=20261023b">
+  <link rel="stylesheet" href="css/site.css?v=20261023c">
+  <script>try{if(localStorage.getItem("wl-menu-collapsed")==="1")document.documentElement.classList.add("menu-collapsed")}catch(e){}</script>
 </head>
 <body>
   <div class="layout">
@@ -42,7 +43,12 @@
   </aside>
   <div class="scrim" id="scrim" hidden></div>
   <main class="wrap">
-    <div class="eyebrow">✦ Learn</div>
+    <div class="top-row">
+      <button type="button" class="menu-toggle" id="menu-toggle" aria-controls="side" aria-expanded="true" aria-label="Hide filter menu" title="Hide filter menu">
+        <span class="mt-icon" aria-hidden="true">☰</span><span class="mt-text">Hide menu</span>
+      </button>
+      <div class="eyebrow">✦ Learn</div>
+    </div>
     <h1>Video digests, <span class="hl">ready</span> when you are.</h1>
     <p class="sub">A five-bullet summary, timestamped moments, one thing to do, and a flip-card quiz for every video, updated nightly from your AI playlists. Filter by tool, topic or playlist.</p>
     <div class="controls">
@@ -64,8 +70,8 @@
   </main>
   </div>
   <noscript><p class="empty" style="max-width:1060px;margin:0 auto 40px">JavaScript is required to load the digests.</p></noscript>
-  <script src="js/csv.js?v=20261023b"></script>
-  <script src="js/digest.js?v=20261023b"></script>
-  <script src="js/home.js?v=20261023b"></script>
+  <script src="js/csv.js?v=20261023c"></script>
+  <script src="js/digest.js?v=20261023c"></script>
+  <script src="js/home.js?v=20261023c"></script>
 </body>
 </html>
