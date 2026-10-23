@@ -10,14 +10,44 @@
   <link rel="stylesheet" href="css/site.css">
 </head>
 <body>
+  <div class="layout">
+  <aside class="side" id="side" aria-label="Filters">
+    <div class="side-head">
+      <span class="side-title">✦ Browse</span>
+      <button type="button" class="side-close" id="side-close" aria-label="Close filters">✕</button>
+    </div>
+    <button type="button" class="f-all" id="f-all">🎬 All videos <span class="n" id="n-all"></span></button>
+    <details class="sec-f" open>
+      <summary>🧰 Tools</summary>
+      <div class="flist" id="f-tools"></div>
+      <details class="more" id="more-tools">
+        <summary>More tools</summary>
+        <div class="flist" id="f-tools-more"></div>
+      </details>
+    </details>
+    <details class="sec-f" open>
+      <summary>🏷️ Topics</summary>
+      <div class="flist" id="f-topics"></div>
+      <details class="more">
+        <summary>More topics</summary>
+        <div class="flist" id="f-topics-more"></div>
+      </details>
+    </details>
+    <details class="sec-f" open>
+      <summary>📺 Playlist</summary>
+      <div class="flist" id="f-playlists"></div>
+    </details>
+  </aside>
+  <div class="scrim" id="scrim" hidden></div>
   <main class="wrap">
     <div class="eyebrow">✦ Learn</div>
     <h1>Video digests, <span class="hl">ready</span> when you are.</h1>
-    <p class="sub">A five-bullet summary, timestamped moments, one thing to do, and a flip-card quiz for every video, updated nightly from your All Things AI playlist.</p>
+    <p class="sub">A five-bullet summary, timestamped moments, one thing to do, and a flip-card quiz for every video, updated nightly from your AI playlists. Filter by tool, topic or playlist.</p>
     <div class="controls">
+      <button type="button" class="filters-btn" id="filters-btn" aria-controls="side" aria-expanded="false">☰ Filters</button>
       <label class="search">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-        <input id="search" type="search" placeholder="Search title, channel, or verdict" autocomplete="off" enterkeyhint="search" aria-label="Search title, channel, or verdict">
+        <input id="search" type="search" placeholder="Search title, channel, tool or topic" autocomplete="off" enterkeyhint="search" aria-label="Search title, channel, tool or topic">
       </label>
       <button type="button" class="toggle" id="worth" aria-pressed="false" aria-controls="grid">
         <span class="sw" aria-hidden="true"></span>
@@ -25,10 +55,12 @@
       </button>
       <div class="count" id="count" aria-live="polite"><span id="count-label">🎬 …</span><span class="long"> · updated nightly</span></div>
     </div>
+    <div class="active" id="active" hidden></div>
     <div class="grid" id="grid"></div>
     <p class="empty" id="empty" hidden>Loading digests…</p>
-    <footer>Updated nightly from your All Things AI playlist</footer>
+    <footer>Updated nightly from your AI playlists</footer>
   </main>
+  </div>
   <noscript><p class="empty" style="max-width:1060px;margin:0 auto 40px">JavaScript is required to load the digests.</p></noscript>
   <script src="js/csv.js"></script>
   <script src="js/digest.js"></script>

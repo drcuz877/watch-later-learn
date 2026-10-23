@@ -172,6 +172,11 @@
           D.el("span", { text: "Added " + (video.date_added || "") }),
           D.pill(video.verdict),
         ]),
+        D.sourceBadge(video),
+        D.el("div", { class: "vtags" }, [
+          D.el("div", { class: "vt-lab", text: "Tagged" }),
+          D.tagChips(video, true),
+        ]),
         D.el(
           "a",
           { class: "btn", href: watch, target: "_blank", rel: "noopener noreferrer" },

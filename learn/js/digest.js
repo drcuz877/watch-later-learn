@@ -117,11 +117,51 @@
     return "https://www.youtube.com/watch?v=" + encodeURIComponent(video.video_id);
   }
 
+  const PLAYLISTS = ["All Things AI", "Claude", "The AI Edge", "Claude For Finance", "Stanford LLMs"];
+  const OWN_PLAYLISTS = ["All Things AI", "Claude"];
+  const EXTERNAL = ["The AI Edge", "Claude For Finance", "Stanford LLMs"];
+  const MAIN_TOPICS = [
+    "Agents", "Prompting", "Automation", "Setup guides", "Comparisons", "Second brain and notes",
+    "Coding and building apps", "Finance and data", "Productivity and workflows",
+    "Local and open models", "Images and video", "How AI works", "AI news and trends", "Course",
+  ];
+  const MORE_TOPICS = ["Research", "Content and writing"];
+
+  function splitTags(raw) {
+    return String(raw || "").split(";").map((t) => t.trim()).filter(Boolean);
+  }
+
+  function isExternal(video) {
+    const src = String((video && video.source_playlist) || "").trim();
+    return Boolean(src) && !OWN_PLAYLISTS.includes(src);
+  }
+
+  function sourceBadge(video) {
+    if (!isExternal(video)) return null;
+    return el("span", { class: "src", text: "From " + video.source_playlist });
+  }
+
+  function tagChips(video, linked) {
+    const wrap = el("div", { class: "tags" });
+    splitTags(video.tools).forEach((t) => {
+      const props = { class: "tc tool", text: t };
+      if (linked) props.href = "index.html#tool=" + encodeURIComponent(t);
+      wrap.append(el(linked ? "a" : "span", props));
+    });
+    splitTags(video.topics).forEach((t) => {
+      const props = { class: "tc topic", text: t };
+      if (linked) props.href = "index.html#topic=" + encodeURIComponent(t);
+      wrap.append(el(linked ? "a" : "span", props));
+    });
+    return wrap;
+  }
+
   function matchesQuery(video, query) {
     const q = norm(query);
     if (!q) return true;
     const hay = norm(
-      [video.title, video.channel, video.verdict, video.verdict_reason, verdictLabel(video.verdict)].join("\n")
+      [video.title, video.channel, video.verdict, video.verdict_reason, verdictLabel(video.verdict),
+        video.tools, video.topics, video.source_playlist].join("\n")
     );
     return hay.includes(q);
   }
@@ -201,6 +241,15 @@
     icon,
     ICONS,
     pill,
+    PLAYLISTS,
+    EXTERNAL,
+    OWN_PLAYLISTS,
+    MAIN_TOPICS,
+    MORE_TOPICS,
+    splitTags,
+    isExternal,
+    sourceBadge,
+    tagChips,
   };
 
   if (typeof module !== "undefined" && module.exports) {
