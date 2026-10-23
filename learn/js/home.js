@@ -107,23 +107,35 @@
       D.tagChips(video, false),
       D.el("div", { class: "meta" }, [
         D.el("span", { class: "ch", text: video.channel }),
-        D.el("span", {}, ["⏱ " + length, D.el("b", { text: "·" }), video.date_added]),
+        D.el("span", {}, D.formatPublished(video.published_date)
+          ? ["⏱ " + length, D.el("b", { text: "·" }), "Published " + D.formatPublished(video.published_date)]
+          : ["⏱ " + length]),
       ]),
     ]);
     return D.el("a", { class: "card", href: "video.html?id=" + encodeURIComponent(video.video_id) }, [thumb, body]);
   }
 
+  // Resets every filter: tool, topic, playlist, the search box and "Only worth watching".
+  function clearAll() {
+    Object.keys(filters).forEach((k) => (filters[k] = null));
+    query = "";
+    search.value = "";
+    worthOnly = false;
+    worth.setAttribute("aria-pressed", "false");
+    writeHash(); update();
+  }
+
   function renderActive() {
     const keys = Object.keys(filters).filter((k) => filters[k]);
     activeBar.hidden = !keys.length;
-    activeBar.replaceChildren(
-      D.el("span", { class: "a-lab", text: "Showing" }),
-      ...keys.map((k) => {
-        const b = D.el("button", { type: "button", class: "a-chip k-" + k }, [LABEL[k] + ": " + filters[k] + "  ✕"]);
-        b.addEventListener("click", () => { filters[k] = null; writeHash(); update(); });
-        return b;
-      })
-    );
+    const chips = keys.map((k) => {
+      const b = D.el("button", { type: "button", class: "a-chip k-" + k }, [LABEL[k] + ": " + filters[k] + "  ✕"]);
+      b.addEventListener("click", () => { filters[k] = null; writeHash(); update(); });
+      return b;
+    });
+    const clear = keys.length ? D.el("button", { type: "button", class: "a-clear", id: "clear-all", "aria-label": "Clear all filters" }, ["↺ Clear all"]) : null;
+    if (clear) clear.addEventListener("click", clearAll);
+    activeBar.replaceChildren(D.el("span", { class: "a-lab", text: "Showing" }), ...chips, ...(clear ? [clear] : []));
   }
 
   function render() {

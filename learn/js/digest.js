@@ -19,8 +19,20 @@
     return isWorth(verdict) ? "worth watching" : "skim";
   }
 
+  // Newest YouTube publish date first. Rows without a valid published_date go last,
+  // in the previous order (date_added newest first, then playlist position).
+  function validDate(value) {
+    const v = String(value || "").trim();
+    return /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : "";
+  }
+
   function sortDigests(rows) {
     return rows.slice().sort((a, b) => {
+      const pa0 = validDate(a.published_date);
+      const pb0 = validDate(b.published_date);
+      if (pa0 && !pb0) return -1;
+      if (!pa0 && pb0) return 1;
+      if (pa0 !== pb0) return pa0 < pb0 ? 1 : -1;
       const da = a.date_added || "";
       const db = b.date_added || "";
       if (da !== db) return da < db ? 1 : -1;
@@ -30,6 +42,17 @@
       const nb = Number.isFinite(pb) ? pb : Number.MAX_SAFE_INTEGER;
       return na - nb;
     });
+  }
+
+  const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  // "2026-06-27" -> "Jun 27, 2026" (parsed by hand so time zones never shift the day).
+  function formatPublished(value) {
+    const v = validDate(value);
+    if (!v) return "";
+    const [y, m, d] = v.split("-").map((n) => parseInt(n, 10));
+    if (!(m >= 1 && m <= 12)) return "";
+    return MONTHS[m - 1] + " " + d + ", " + y;
   }
 
   function shortLength(length) {
@@ -225,6 +248,7 @@
     isWorth,
     verdictLabel,
     sortDigests,
+    formatPublished,
     shortLength,
     formatSeconds,
     summaryBullets,
