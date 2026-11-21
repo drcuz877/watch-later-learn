@@ -573,6 +573,8 @@ footer { margin-top: 64px; color: var(--dim); font-size: 13px; }
 .a-chip.k-tool { background: var(--coral); }
 .a-chip.k-topic { background: var(--violet); }
 .a-chip.k-playlist { background: var(--teal); }
+.a-chip.k-rating { background: #e0a800; color: #3a2a00; }
+.a-chip.k-sort { background: var(--text); }
 .a-clear {
   font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; white-space: nowrap;
   color: var(--text); background: var(--yellow); border: 2px solid #f0b400; border-radius: 999px;
@@ -668,3 +670,30 @@ a.tc:hover { filter: brightness(0.95); }
   .controls .toggle { order: 3; }
   .controls .count { order: 4; }
 }
+
+/* Rating filter + sort (sidebar) and the rating badge on cards. */
+.rate { display: flex; flex-direction: column; gap: 8px; padding: 4px 10px 8px; }
+.rate-lab, .sort-lab { font-size: 13.5px; font-weight: 600; color: var(--muted); }
+.rate-lab b { color: var(--text); }
+.sort-lab { margin-top: 6px; }
+.rate-row { display: flex; align-items: center; gap: 10px; }
+.rate-row input[type="range"] { flex: 1; min-width: 0; accent-color: var(--coral); height: 28px; cursor: pointer; }
+.rate-row input[type="number"] {
+  width: 64px; font: inherit; font-size: 15px; font-weight: 700; text-align: center; color: var(--text);
+  border: 2px solid var(--line); border-radius: 12px; padding: 6px 4px; background: var(--bg);
+  font-variant-numeric: tabular-nums;
+}
+.rate-row input[type="number"]:focus { outline: none; border-color: var(--coral); }
+.rate-ticks { display: flex; justify-content: space-between; font-size: 11px; color: var(--dim); padding-right: 74px; margin-top: -6px; }
+.sort {
+  font: inherit; font-size: 14.5px; font-weight: 600; color: var(--text); background: var(--bg);
+  border: 2px solid var(--line); border-radius: 12px; padding: 8px 10px; cursor: pointer;
+}
+.sort:focus { outline: none; border-color: var(--coral); }
+.rbadge {
+  position: absolute; right: 10px; top: 10px; display: inline-flex; align-items: center; gap: 4px;
+  font-size: 12.5px; font-weight: 800; line-height: 1; padding: 6px 9px; border-radius: 999px;
+  background: #fff; color: var(--text); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18); font-variant-numeric: tabular-nums;
+}
+.rbadge.hi { background: var(--coral); color: #fff; }
+.rbadge.mid { background: var(--yellowSoft); color: #6b4d00; }

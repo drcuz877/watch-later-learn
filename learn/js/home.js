@@ -4,20 +4,37 @@
   const grid = $("grid"), empty = $("empty"), countLabel = $("count-label");
   const search = $("search"), worth = $("worth"), activeBar = $("active");
   const side = $("side"), scrim = $("scrim"), filtersBtn = $("filters-btn");
+  const rateRange = $("rate-range"), rateNum = $("rate-num"), rateShow = $("rate-show"), sortSel = $("sort");
 
   let all = [];
   let query = "";
   let worthOnly = false;
   const filters = { tool: null, topic: null, playlist: null };
   const LABEL = { tool: "Tool", topic: "Topic", playlist: "Playlist" };
+  // Rating filter (show rating >= minRating, up to 10) and sort order. Both work on top of
+  // every other filter. Default sort is newest published, the order loadDigests returns.
+  let minRating = 0;
+  let sortMode = "newest";
+  const SORTS = { newest: "Newest published", oldest: "Oldest published", high: "Highest rated", low: "Lowest rated" };
+
+  function cleanRating(value) {
+    const n = Number(String(value == null ? "" : value).replace(",", "."));
+    if (!Number.isFinite(n)) return 0;
+    return Math.round(Math.max(0, Math.min(10, n)) * 10) / 10;
+  }
 
   function readHash() {
     const h = new URLSearchParams(location.hash.replace(/^#/, ""));
     Object.keys(filters).forEach((k) => (filters[k] = h.get(k)));
+    minRating = cleanRating(h.get("min"));
+    sortMode = SORTS[h.get("sort")] ? h.get("sort") : "newest";
+    syncRatingControls();
   }
   function writeHash() {
     const h = new URLSearchParams();
     Object.keys(filters).forEach((k) => filters[k] && h.set(k, filters[k]));
+    if (minRating > 0) h.set("min", minRating.toFixed(1));
+    if (sortMode !== "newest") h.set("sort", sortMode);
     const s = h.toString();
     history.replaceState(null, "", s ? "#" + s : location.pathname + location.search);
   }
@@ -29,7 +46,30 @@
   }
   function matches(v) {
     if (!D.matchesFilters(v, query, worthOnly)) return false;
+    if (minRating > 0) {
+      const r = D.ratingOf(v);
+      if (r == null || r < minRating) return false;
+    }
     return Object.keys(filters).every((k) => !filters[k] || fieldOf(k, v).includes(filters[k]));
+  }
+
+  // Sorts a filtered list. Ties (and unrated rows, which go last) keep the
+  // newest-published order from loadDigests, so the sort is stable.
+  function sorted(list) {
+    if (sortMode === "newest") return list;
+    if (sortMode === "oldest") return list.slice().reverse();
+    const dir = sortMode === "high" ? -1 : 1;
+    return list.map((v, i) => ({ v, i, r: D.ratingOf(v) })).sort((a, b) => {
+      if (a.r == null || b.r == null) return (a.r == null) - (b.r == null) || a.i - b.i;
+      return (a.r - b.r) * dir || a.i - b.i;
+    }).map((x) => x.v);
+  }
+
+  function syncRatingControls() {
+    rateRange.value = String(minRating);
+    if (document.activeElement !== rateNum) rateNum.value = minRating.toFixed(1);
+    rateShow.textContent = minRating > 0 ? minRating.toFixed(1) + " to 10" : "all ratings";
+    sortSel.value = sortMode;
   }
 
   function counts(kind) {
@@ -87,6 +127,7 @@
     const length = D.shortLength(video.length);
     const thumb = D.el("div", { class: "thumb" }, [
       D.pill(video.verdict),
+      D.ratingBadge(video),
       D.el("span", { class: "dur", text: length }),
     ]);
     {
@@ -115,9 +156,12 @@
     return D.el("a", { class: "card", href: "video.html?id=" + encodeURIComponent(video.video_id) }, [thumb, body]);
   }
 
-  // Resets every filter: tool, topic, playlist, the search box and "Only worth watching".
+  // Resets every filter: tool, topic, playlist, rating, sort, the search box and "Only worth watching".
   function clearAll() {
     Object.keys(filters).forEach((k) => (filters[k] = null));
+    minRating = 0;
+    sortMode = "newest";
+    syncRatingControls();
     query = "";
     search.value = "";
     worthOnly = false;
@@ -133,13 +177,24 @@
       b.addEventListener("click", () => { filters[k] = null; writeHash(); update(); });
       return b;
     });
-    const clear = keys.length ? D.el("button", { type: "button", class: "a-clear", id: "clear-all", "aria-label": "Clear all filters" }, ["↺ Clear all"]) : null;
+    if (minRating > 0) {
+      const b = D.el("button", { type: "button", class: "a-chip k-rating" }, ["Rating: " + minRating.toFixed(1) + "+  ✕"]);
+      b.addEventListener("click", () => { minRating = 0; syncRatingControls(); writeHash(); update(); });
+      chips.push(b);
+    }
+    if (sortMode !== "newest") {
+      const b = D.el("button", { type: "button", class: "a-chip k-sort" }, ["Sort: " + SORTS[sortMode] + "  ✕"]);
+      b.addEventListener("click", () => { sortMode = "newest"; syncRatingControls(); writeHash(); update(); });
+      chips.push(b);
+    }
+    activeBar.hidden = !chips.length;
+    const clear = chips.length ? D.el("button", { type: "button", class: "a-clear", id: "clear-all", "aria-label": "Clear all filters" }, ["↺ Clear all"]) : null;
     if (clear) clear.addEventListener("click", clearAll);
     activeBar.replaceChildren(D.el("span", { class: "a-lab", text: "Showing" }), ...chips, ...(clear ? [clear] : []));
   }
 
   function render() {
-    const visible = all.filter(matches);
+    const visible = sorted(all.filter(matches));
     grid.replaceChildren();
     const fragment = document.createDocumentFragment();
     visible.forEach((v, i) => fragment.append(card(v, i)));
@@ -223,6 +278,21 @@
   });
 
   search.addEventListener("input", () => { query = search.value; render(); });
+  // Slider and number box stay in sync; either one sets "show rating >= value, up to 10".
+  // The drawer stays open on iPhone while you adjust them.
+  function setMinRating(value) {
+    minRating = cleanRating(value);
+    syncRatingControls();
+    writeHash(); renderActive(); render();
+  }
+  rateRange.addEventListener("input", () => setMinRating(rateRange.value));
+  rateNum.addEventListener("input", () => { if (rateNum.value !== "") setMinRating(rateNum.value); });
+  rateNum.addEventListener("change", () => { setMinRating(rateNum.value); rateNum.value = minRating.toFixed(1); });
+  rateNum.addEventListener("keydown", (event) => { if (event.key === "Enter") rateNum.blur(); });
+  sortSel.addEventListener("change", () => {
+    sortMode = SORTS[sortSel.value] ? sortSel.value : "newest";
+    writeHash(); renderActive(); render();
+  });
   worth.addEventListener("click", () => {
     worthOnly = !worthOnly;
     worth.setAttribute("aria-pressed", worthOnly ? "true" : "false");

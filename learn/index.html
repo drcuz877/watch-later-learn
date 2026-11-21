@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:SOFT,WONK,opsz,wght@0..100,0..1,9..144,500..800&family=Outfit:wght@400..700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/site.css?v=20261023d">
+  <link rel="stylesheet" href="css/site.css?v=20261120r">
   <script>try{if(localStorage.getItem("wl-menu-collapsed")==="1")document.documentElement.classList.add("menu-collapsed")}catch(e){}</script>
 </head>
 <body>
@@ -19,6 +19,24 @@
       <button type="button" class="side-close" id="side-close" aria-label="Close filters">✕</button>
     </div>
     <button type="button" class="f-all" id="f-all">🎬 All videos <span class="n" id="n-all"></span></button>
+    <details class="sec-f sec-rate" open>
+      <summary>⭐ Rating &amp; sort</summary>
+      <div class="rate">
+        <label class="rate-lab" for="rate-num">Show <b id="rate-show">all ratings</b></label>
+        <div class="rate-row">
+          <input type="range" id="rate-range" min="0" max="10" step="0.1" value="0" aria-label="Minimum rating">
+          <input type="number" id="rate-num" min="0" max="10" step="0.1" value="0" inputmode="decimal" aria-label="Minimum rating, 0 to 10">
+        </div>
+        <div class="rate-ticks" aria-hidden="true"><span>0</span><span>5</span><span>10</span></div>
+        <label class="sort-lab" for="sort">Sort by</label>
+        <select id="sort" class="sort">
+          <option value="newest">Newest published</option>
+          <option value="oldest">Oldest published</option>
+          <option value="high">Highest rated</option>
+          <option value="low">Lowest rated</option>
+        </select>
+      </div>
+    </details>
     <details class="sec-f" open>
       <summary>🧰 Tools</summary>
       <div class="flist" id="f-tools"></div>
@@ -50,7 +68,7 @@
       <div class="eyebrow">✦ Learn</div>
     </div>
     <h1>Video digests, <span class="hl">ready</span> when you are.</h1>
-    <p class="sub">A five-bullet summary, timestamped moments, one thing to do, and a flip-card quiz for every video, updated nightly from your AI playlists. Filter by tool, topic or playlist.</p>
+    <p class="sub">A five-bullet summary, timestamped moments, one thing to do, and a flip-card quiz for every video, updated nightly from your AI playlists. Filter by rating, tool, topic or playlist.</p>
     <div class="controls">
       <button type="button" class="filters-btn" id="filters-btn" aria-controls="side" aria-expanded="false">☰ Filters</button>
       <label class="search">
@@ -70,8 +88,8 @@
   </main>
   </div>
   <noscript><p class="empty" style="max-width:1060px;margin:0 auto 40px">JavaScript is required to load the digests.</p></noscript>
-  <script src="js/csv.js?v=20261023d"></script>
-  <script src="js/digest.js?v=20261023d"></script>
-  <script src="js/home.js?v=20261023d"></script>
+  <script src="js/csv.js?v=20261120r"></script>
+  <script src="js/digest.js?v=20261120r"></script>
+  <script src="js/home.js?v=20261120r"></script>
 </body>
 </html>

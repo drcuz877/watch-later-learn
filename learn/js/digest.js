@@ -243,7 +243,28 @@
     });
   }
 
+  // Shared 1-10 rating (one decimal). Returns null when a row has no rating yet.
+  function ratingOf(video) {
+    const raw = String((video && video.rating) || "").trim();
+    if (raw === "") return null;
+    const n = Number(raw);
+    return Number.isFinite(n) ? Math.max(0, Math.min(10, n)) : null;
+  }
+
+  function ratingBadge(video) {
+    const r = ratingOf(video);
+    if (r == null) return null;
+    return el("span", {
+      class: "rbadge" + (r >= 8 ? " hi" : r >= 6 ? " mid" : ""),
+      title: video.rating_reason || "",
+      "aria-label": "Rated " + r.toFixed(1) + " out of 10",
+      text: "★ " + r.toFixed(1),
+    });
+  }
+
   root.Digest = {
+    ratingOf,
+    ratingBadge,
     norm,
     isWorth,
     verdictLabel,
